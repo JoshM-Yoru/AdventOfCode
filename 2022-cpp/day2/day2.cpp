@@ -16,6 +16,7 @@ int main() {
     }
 
     int score = 0;
+    int score2 = 0;
     int p1 = 0;
     int p2 = 0;
     string line;
@@ -23,16 +24,21 @@ int main() {
     while (getline(infile, line)) {
         p1 = line[0] - 'A' + 1;
         p2 = line[2] - 'X' + 1;
-        score += p1;
-        if (p1 == 1 && p2 == 3) {
+
+        // Part 1
+        score += p2;
+
+        if (p2 == 1 && p1 == 3) {
             score += 6;
-        } else if (p1 == 2  && p2 == 1) {
+        } else if (p2 == 2  && p1 == 1) {
             score += 6;
-        } else if (p1 == 3 && p2 == 2) {
+        } else if (p2 == 3 && p1 == 2) {
             score += 6;
         } else if (p1 == p2) {
             score += 3;
         }
+
+        // Part 2
     }
 
     cout << "Day 2" << endl;
