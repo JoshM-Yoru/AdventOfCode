@@ -17,24 +17,25 @@ int main() {
 
     string line;
     int total = 0;
+    bool tracker[100];
 
     while (getline(infile, line)) {
-        int tracker[52];
 
         for (int i = 0; i < line.length() / 2; i++) {
-           if (line[i] >= 'A') {
-               tracker[line[i] - 'A'] = 1;
+           if (line[i] < 'a') {
+               tracker[line[i] - 'A' + 26] = true;
            } else {
-               tracker[line[i] - 'a' + 26] = 1;
+               tracker[line[i] - 'A' + 26] = true;
+               tracker[line[i] - 'a'] = true;
            }
         }
         for (int i = line.length() / 2; i < line.length(); i++) {
-           if (line[i] >= 'A' && tracker[line[i] - 'A'] == 1) {
-               total += line[i] - 'A';
-               tracker[line[i] - 'A'] = 2;
-           } else if (line[i] < 'A' && tracker[line[i] - 'a' + 26] == 1){
-               total += line[i] - 'a' + 26;
-               tracker[line[i] - 'a' + 26] = 2;
+           if (line[i] < 'a' && tracker[line[i] - 'A' + 26] == true) {
+               total += line[i] - 'A' + 27;
+               break;
+           } else if (line[i] >= 'a' && tracker[line[i] - 'a'] == true){
+               total += line[i] - 'a' + 1;
+               break;
            }
         }
     }
