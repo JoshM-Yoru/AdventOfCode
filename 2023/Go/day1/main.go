@@ -30,11 +30,11 @@ func main() {
 		fmt.Println("Error reading line")
 	}
 
-	partOne(&lines)
-	partTwo(&lines)
+    fmt.Println("Part One Answer: ", partOne(&lines))
+    fmt.Println("Part Two Answer: ", partTwo(&lines))
 }
 
-func partOne(file *[]string) {
+func partOne(file *[]string) int {
 	lines := *file
 	sum := 0
 
@@ -69,10 +69,10 @@ func partOne(file *[]string) {
 		sum += value
 	}
 
-	fmt.Println(sum)
+    return sum
 }
 
-func partTwo(file *[]string) {
+func partTwo(file *[]string) int {
 	lines := *file
 	sum := 0
 
@@ -123,5 +123,5 @@ func partTwo(file *[]string) {
 		sum += value
 	}
 
-	fmt.Println(sum)
+    return sum
 }
