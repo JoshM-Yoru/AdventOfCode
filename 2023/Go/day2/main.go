@@ -29,7 +29,8 @@ func main() {
 		fmt.Println("Error reading line")
 	}
 
-    fmt.Println("Part One: ", gameCheckOne(&lines))
+	fmt.Println("Part One: ", gameCheckOne(&lines))
+	fmt.Println("Part Two: ", gameCheckTwo(&lines))
 
 }
 
@@ -37,34 +38,73 @@ func gameCheckOne(file *[]string) int {
 	lines := *file
 	sum := 0
 
-    table := make(map[string]int)
-    table["red"] = 12
-    table["green"] = 13
-    table["blue"] = 14
+	table := make(map[string]int)
+	table["red"] = 12
+	table["green"] = 13
+	table["blue"] = 14
 
 	for i := 0; i < len(lines); i++ {
-        cleanedLine := strings.ReplaceAll(lines[i], ",", "")
-        cleanedLine = strings.ReplaceAll(cleanedLine, ";", "")
-        line := strings.Split(cleanedLine, " ")
+		cleanedLine := strings.ReplaceAll(lines[i], ",", "")
+		cleanedLine = strings.ReplaceAll(cleanedLine, ";", "")
+		line := strings.Split(cleanedLine, " ")
 
-        possible := true
+		possible := true
 
-        Line:
+	Line:
 		for j := 2; j < len(line); j += 2 {
-            num, err := strconv.Atoi(line[j])
-            if err != nil {
-                fmt.Println("Not a number: ", lines[i], line[j])
-            }
+			num, err := strconv.Atoi(line[j])
+			if err != nil {
+				fmt.Println("Not a number: ", lines[i], line[j])
+			}
 
-            if num > table[line[j+1]] {
-                possible = false
-                break Line
-            }
+			if num > table[line[j+1]] {
+				possible = false
+				break Line
+			}
 		}
 
-        if possible {
-            sum = sum + i + 1
-        }
+		if possible {
+			sum = sum + i + 1
+		}
+	}
+
+	return sum
+}
+
+func gameCheckTwo(file *[]string) int {
+	lines := *file
+	sum := 0
+
+	table := make(map[string]int)
+	table["red"] = 0
+	table["green"] = 0
+	table["blue"] = 0
+
+	for i := 0; i < len(lines); i++ {
+		cleanedLine := strings.ReplaceAll(lines[i], ",", "")
+		cleanedLine = strings.ReplaceAll(cleanedLine, ";", "")
+		line := strings.Split(cleanedLine, " ")
+
+		var power int
+
+		for j := 2; j < len(line); j += 2 {
+			num, err := strconv.Atoi(line[j])
+			if err != nil {
+				fmt.Println("Not a number: ", lines[i], line[j])
+			}
+
+			if num > table[line[j+1]] {
+				table[line[j+1]] = num
+			}
+		}
+
+		power = table["red"] * table["green"] * table["blue"]
+
+		sum += power
+
+		table["red"] = 0
+		table["green"] = 0
+		table["blue"] = 0
 	}
 
 	return sum
