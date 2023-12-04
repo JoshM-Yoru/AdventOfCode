@@ -20,22 +20,22 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	var lines []string
+	var contents []string
 
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		contents = append(contents, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading line")
 	}
 
-    fmt.Println("Part One Answer: ", partOne(&lines))
-    fmt.Println("Part Two Answer: ", partTwo(&lines))
+    fmt.Println("Part One Answer: ", partOne(&contents))
+    fmt.Println("Part Two Answer: ", partTwo(&contents))
 }
 
-func partOne(file *[]string) int {
-	lines := *file
+func partOne(contents *[]string) int {
+	lines := *contents
 	sum := 0
 
 	for i := 0; i < len(lines); i++ {

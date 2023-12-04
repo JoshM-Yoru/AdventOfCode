@@ -19,23 +19,23 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	var lines []string
+	var contents []string
 
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		contents = append(contents, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading line")
 	}
 
-	fmt.Println("Part One: ", gameCheckOne(&lines))
-	fmt.Println("Part Two: ", gameCheckTwo(&lines))
+	fmt.Println("Part One: ", gameCheckOne(&contents))
+	fmt.Println("Part Two: ", gameCheckTwo(&contents))
 
 }
 
-func gameCheckOne(file *[]string) int {
-	lines := *file
+func gameCheckOne(contents *[]string) int {
+	lines := *contents
 	sum := 0
 
 	table := make(map[string]int)
