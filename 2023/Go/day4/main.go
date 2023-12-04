@@ -44,7 +44,7 @@ func cardCheck(contents *[]string) int {
 		checkMyCard := false
 		numString := ""
 
-		for j := 10; j < len(line); j++ {
+		for j := 8; j < len(line); j++ {
 			character := line[j]
 			if character == 124 {
 				checkMyCard = true
@@ -53,30 +53,35 @@ func cardCheck(contents *[]string) int {
 				numString += string(character)
 			} else if len(numString) > 0 && !unicode.IsDigit(rune(character)) && !checkMyCard {
 				scoreTable[numString] = 0
+				numString = ""
 			}
 
-			if checkMyCard {
-				if val, ok := scoreTable[numString]; ok {
-					val++
+			if checkMyCard && len(numString) > 0 && !unicode.IsDigit(rune(character)) {
+				if _, ok := scoreTable[numString]; ok {
+					scoreTable[numString] = 1
 				}
+                numString = ""
 			}
 		}
-			if len(numString) > 0 && checkMyCard {
-				if val, ok := scoreTable[numString]; ok {
-					val++
-				}
+
+		if len(numString) > 0 && checkMyCard {
+			if _, ok := scoreTable[numString]; ok {
+				scoreTable[numString] = 1
 			}
+		}
+
+		numString = ""
 
 		matchPoints := 0
 		for _, v := range scoreTable {
-			if matchPoints > 2 {
+			if matchPoints >= 1 && v >= 1 {
 				matchPoints *= 2
-			} else if v >= 1 {
-				matchPoints += v
-			}
+            } else if v >= 1  {
+				matchPoints++
+			} 
 		}
 
-        sum += matchPoints
+		sum += matchPoints
 	}
 
 	return sum
