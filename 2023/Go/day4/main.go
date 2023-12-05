@@ -142,9 +142,7 @@ func cardCheckPartTwo(contents *[]string) int {
 			if cardCopies[k] == 0 {
 				cardCopies[k] = 1
 			}
-            for l := 0; l < cardCopies[i]; l++ {
-                cardCopies[k]++ 
-            }
+            cardCopies[k] += cardCopies[i]
 		}
 
 	}
