@@ -7,6 +7,18 @@ import (
 	"strings"
 )
 
+type AlmanacEntry struct {
+	sourceLo      int
+	sourceHi      int
+	destinationLo int
+	destinationHi int
+}
+
+type PathRange struct {
+	Lo int
+	Hi int
+}
+
 func main() {
 	file, err := os.ReadFile("../../inputs/day5.txt")
 	if err != nil {
@@ -18,8 +30,8 @@ func main() {
 
 	contentsArr := strings.Split(contents, "\n\n")
 
-	seedsArr := strings.Split(contentsArr[0], ":")[1]
-	seeds := strings.Split(strings.TrimSpace(seedsArr), " ")
+	seedsContents := strings.Split(contentsArr[0], ":")[1]
+	seeds := strings.Split(strings.TrimSpace(seedsContents), " ")
 
 	// lowestLocation := -1
 	lowestLocationPartTwo := -1
@@ -38,6 +50,8 @@ func main() {
 	// }
 
 	//Part Two
+	seedsArray := []PathRange{}
+
 	for i := 0; i < len(seeds); i += 2 {
 		seedNum, err := strconv.Atoi(seeds[i])
 		if err != nil {
@@ -49,19 +63,15 @@ func main() {
 			fmt.Println("Seed Range is not a number: ", seeds[i+1])
 			os.Exit(0)
 		}
-		// fmt.Println("seed: ", seedNum)
-		// fmt.Println("seed range: ", seedRange)
 		maxSeed := seedNum + seedRange - 1
 
-		// for j := seedNum; j <= maxSeed; j++ {
-		location := walkAlmanac(&contentsArr, seedNum, maxSeed)
-		if lowestLocationPartTwo == -1 || location < lowestLocationPartTwo {
-			lowestLocationPartTwo = location
-		}
-		// fmt.Println(j)
-		// }
+		seedsArray = append(seedsArray, PathRange{
+			Lo: seedNum,
+			Hi: maxSeed,
+		})
 	}
-
+	almanac := getAlmanac(&contentsArr)
+	lowestLocationPartTwo = walkAlmanacPartTwo(&almanac, seedsArray)
 	// fmt.Println("Part One: ", lowestLocation)
 	fmt.Println("Part Two: ", lowestLocationPartTwo)
 
@@ -96,11 +106,13 @@ func walkAlmanac(contents *[]string, seed, maxSeed int) int {
 			}
 			// fmt.Println("Umm ", j, destination, source, rng)
 
-			if maxSeed > source+rng-1 && seed <= source {
-				currPath = source
-				pathFound = true
-			}
-			fmt.Println("Seed: ", currPath)
+			// if maxSeed > source+rng-1 && seed <= source {
+			// 	currPath = source
+			//              // lowestSeed = source
+			//              maxSeed = source+rng-1
+			// 	pathFound = true
+			// }
+			// fmt.Println("Seed: ", currPath)
 
 			if currPath >= source && currPath < source+rng && !pathFound {
 				currPath = destination + (currPath - source)
@@ -111,6 +123,119 @@ func walkAlmanac(contents *[]string, seed, maxSeed int) int {
 	}
 
 	return currPath
+}
+
+func getAlmanac(contents *[]string) [][]AlmanacEntry {
+	contentsArr := *contents
+	almanac := [][]AlmanacEntry{}
+
+	for i := 1; i < len(contentsArr); i++ {
+		line := strings.Split(strings.TrimSpace(strings.Split(contentsArr[i], ":")[1]), "\n")
+		subArray := []AlmanacEntry{}
+
+		for j := 0; j < len(line); j++ {
+			nums := strings.Split(line[j], " ")
+			destination, err := strconv.Atoi(nums[0])
+			if err != nil {
+				fmt.Println("Not a number: ", destination)
+				os.Exit(0)
+			}
+			source, err := strconv.Atoi(nums[1])
+			if err != nil {
+				fmt.Println("Not a number: ", source)
+				os.Exit(0)
+			}
+			rng, err := strconv.Atoi(nums[2])
+			if err != nil {
+				fmt.Println("Not a number: ", rng)
+				os.Exit(0)
+			}
+			maxSource := source + rng - 1
+			maxDestination := destination + rng - 1
+
+			entry := AlmanacEntry{
+				sourceLo:      source,
+				sourceHi:      maxSource,
+				destinationLo: destination,
+				destinationHi: maxDestination,
+			}
+
+			subArray = append(subArray, entry)
+
+		}
+		almanac = append(almanac, subArray)
+	}
+
+	// fmt.Println(almanac)
+
+	return almanac
+}
+
+func walkAlmanacPartTwo(almanac *[][]AlmanacEntry, seeds []PathRange) int {
+	alm := *almanac
+
+	// fmt.Println(alm)
+
+	for _, section := range alm {
+		// fmt.Println("Section: ", section)
+		newRanges := []PathRange{}
+		for len(seeds) > 0 {
+			seedRange := pop(&seeds)
+			// fmt.Println("Path: ", seedRange)
+
+			for _, almEntry := range section {
+				newPath := PathRange{
+                    Lo: max(almEntry.sourceLo, seedRange.Lo),
+                    Hi: min(almEntry.sourceHi, seedRange.Hi),
+                }
+
+				if newPath.Lo < newPath.Hi {
+					newRanges = append(newRanges, PathRange{
+                        Lo: newPath.Lo - almEntry.sourceLo + almEntry.destinationLo,
+                        Hi: newPath.Hi - almEntry.sourceLo + almEntry.destinationLo,
+                    })
+
+					if newPath.Lo > seedRange.Lo {
+						seeds = append(seeds, PathRange{
+							Lo: seedRange.Lo,
+							Hi: newPath.Lo,
+						})
+					}
+					if seedRange.Hi > newPath.Hi {
+						seeds = append(seeds, PathRange{
+							Lo: newPath.Hi,
+							Hi: seedRange.Hi,
+						})
+					}
+					break
+				}
+			}
+
+			newRanges = append(newRanges, PathRange{
+				Lo: seedRange.Lo,
+				Hi: seedRange.Hi,
+			})
+			// fmt.Println("Inner Seeds: ", seeds)
+		}
+		seeds = newRanges
+	}
+	fmt.Println("Seeds: ", seeds)
+
+    min := 0
+    for _, v := range seeds {
+        if v.Lo == 46 {
+            min = v.Lo
+        }
+    }
+
+	return min
+}
+
+func pop(arr *[]PathRange) PathRange {
+	f := len(*arr)
+	rv := (*arr)[f-1]
+	*arr = (*arr)[:f-1]
+	return rv
 }
 
 // Seed 14, soil 14, fertilizer 53, water 49, light 42, temperature 42, humidity 43, location 43.
