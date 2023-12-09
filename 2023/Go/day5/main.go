@@ -174,26 +174,35 @@ func getAlmanac(contents *[]string) [][]AlmanacEntry {
 func walkAlmanacPartTwo(almanac *[][]AlmanacEntry, seeds []PathRange) int {
 	alm := *almanac
 
-	// fmt.Println(alm)
-
+    // fmt.Println(seeds)
+    // fmt.Println()
+    //
+    // fmt.Println(alm[0])
+    // fmt.Println(alm[1])
+    // fmt.Println(alm[2])
+    // fmt.Println(alm[3])
+    // fmt.Println(alm[4])
+    // fmt.Println(alm[5])
+    // fmt.Println(alm[6])
+    //
 	for _, section := range alm {
-		// fmt.Println("Section: ", section)
 		newRanges := []PathRange{}
 		for len(seeds) > 0 {
 			seedRange := pop(&seeds)
-			// fmt.Println("Path: ", seedRange)
 
+            // fmt.Print(i)
+            // fmt.Println(seeds)
 			for _, almEntry := range section {
 				newPath := PathRange{
-                    Lo: max(almEntry.sourceLo, seedRange.Lo),
-                    Hi: min(almEntry.sourceHi, seedRange.Hi),
-                }
+					Lo: max(seedRange.Lo, almEntry.sourceLo),
+					Hi: min(seedRange.Hi, almEntry.sourceHi),
+				}
 
 				if newPath.Lo < newPath.Hi {
 					newRanges = append(newRanges, PathRange{
-                        Lo: newPath.Lo - almEntry.sourceLo + almEntry.destinationLo,
-                        Hi: newPath.Hi - almEntry.sourceLo + almEntry.destinationLo,
-                    })
+						Lo: newPath.Lo - almEntry.sourceLo + almEntry.destinationLo,
+						Hi: newPath.Hi - newPath.Lo + almEntry.destinationLo,
+					})
 
 					if newPath.Lo > seedRange.Lo {
 						seeds = append(seeds, PathRange{
@@ -210,23 +219,21 @@ func walkAlmanacPartTwo(almanac *[][]AlmanacEntry, seeds []PathRange) int {
 					break
 				}
 			}
-
-			newRanges = append(newRanges, PathRange{
-				Lo: seedRange.Lo,
-				Hi: seedRange.Hi,
-			})
-			// fmt.Println("Inner Seeds: ", seeds)
+            // fmt.Println(seeds)
+            if seedRange.Lo < seedRange.Hi {
+                newRanges = append(newRanges, seedRange)
+            }
 		}
 		seeds = newRanges
 	}
-	fmt.Println("Seeds: ", seeds)
+	// fmt.Println("Seeds: ", seeds)
 
-    min := 0
-    for _, v := range seeds {
-        if v.Lo == 46 {
-            min = v.Lo
-        }
-    }
+	min := seeds[0].Lo
+	for _, v := range seeds {
+		if v.Lo < min {
+			min = v.Lo
+		}
+	}
 
 	return min
 }
