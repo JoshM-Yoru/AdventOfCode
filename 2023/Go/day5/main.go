@@ -171,66 +171,134 @@ func getAlmanac(contents *[]string) [][]AlmanacEntry {
 	return almanac
 }
 
+// func walkAlmanacPartTwo(almanac *[][]AlmanacEntry, seeds []PathRange) int {
+// 	alm := *almanac
+//
+//     // fmt.Println(seeds)
+//     // fmt.Println()
+//     //
+//     // fmt.Println(alm[0])
+//     // fmt.Println(alm[1])
+//     // fmt.Println(alm[2])
+//     // fmt.Println(alm[3])
+//     // fmt.Println(alm[4])
+//     // fmt.Println(alm[5])
+//     // fmt.Println(alm[6])
+//     //
+// 	for _, section := range alm {
+// 		newRanges := []PathRange{}
+// 		for len(seeds) > 0 {
+// 			seedRange := pop(&seeds)
+//
+//             // fmt.Print(i)
+//             // fmt.Println(seeds)
+// 			for _, almEntry := range section {
+// 				newPath := PathRange{
+// 					Lo: max(seedRange.Lo, almEntry.sourceLo),
+// 					Hi: min(seedRange.Hi, almEntry.sourceHi),
+// 				}
+//
+// 				if newPath.Lo < newPath.Hi {
+// 					newRanges = append(newRanges, PathRange{
+// 						Lo: newPath.Lo - almEntry.sourceLo + almEntry.destinationLo,
+// 						Hi: newPath.Hi - newPath.Lo + almEntry.destinationLo,
+// 					})
+//
+// 					if newPath.Lo > seedRange.Lo {
+// 						seeds = append(seeds, PathRange{
+// 							Lo: seedRange.Lo,
+// 							Hi: newPath.Lo,
+// 						})
+// 					}
+// 					if seedRange.Hi > newPath.Hi {
+// 						seeds = append(seeds, PathRange{
+// 							Lo: newPath.Hi,
+// 							Hi: seedRange.Hi,
+// 						})
+// 					}
+// 					break
+// 				}
+// 			}
+//             // fmt.Println(seeds)
+//             if seedRange.Lo < seedRange.Hi {
+//                 newRanges = append(newRanges, seedRange)
+//             }
+// 		}
+// 		seeds = newRanges
+// 	}
+// 	// fmt.Println("Seeds: ", seeds)
+//
+// 	min := seeds[0].Lo
+// 	for _, v := range seeds {
+// 		if v.Lo < min {
+// 			min = v.Lo
+// 		}
+// 	}
+//
+// 	return min
+// }
+
 func walkAlmanacPartTwo(almanac *[][]AlmanacEntry, seeds []PathRange) int {
 	alm := *almanac
 
-    // fmt.Println(seeds)
-    // fmt.Println()
-    //
-    // fmt.Println(alm[0])
-    // fmt.Println(alm[1])
-    // fmt.Println(alm[2])
-    // fmt.Println(alm[3])
-    // fmt.Println(alm[4])
-    // fmt.Println(alm[5])
-    // fmt.Println(alm[6])
-    //
-	for _, section := range alm {
-		newRanges := []PathRange{}
-		for len(seeds) > 0 {
-			seedRange := pop(&seeds)
+for _, section := range alm {
+    newRanges := []PathRange{}
+    for len(seeds) > 0 {
+        seedRange := pop(&seeds)
 
-            // fmt.Print(i)
-            // fmt.Println(seeds)
-			for _, almEntry := range section {
-				newPath := PathRange{
-					Lo: max(seedRange.Lo, almEntry.sourceLo),
-					Hi: min(seedRange.Hi, almEntry.sourceHi),
-				}
+        fmt.Println("Processing seed range:", seedRange)
 
-				if newPath.Lo < newPath.Hi {
-					newRanges = append(newRanges, PathRange{
-						Lo: newPath.Lo - almEntry.sourceLo + almEntry.destinationLo,
-						Hi: newPath.Hi - newPath.Lo + almEntry.destinationLo,
-					})
-
-					if newPath.Lo > seedRange.Lo {
-						seeds = append(seeds, PathRange{
-							Lo: seedRange.Lo,
-							Hi: newPath.Lo,
-						})
-					}
-					if seedRange.Hi > newPath.Hi {
-						seeds = append(seeds, PathRange{
-							Lo: newPath.Hi,
-							Hi: seedRange.Hi,
-						})
-					}
-					break
-				}
-			}
-            // fmt.Println(seeds)
-            if seedRange.Lo < seedRange.Hi {
-                newRanges = append(newRanges, seedRange)
+        for _, almEntry := range section {
+            newPath := PathRange{
+                Lo: max(seedRange.Lo, almEntry.sourceLo),
+                Hi: min(seedRange.Hi, almEntry.sourceHi),
             }
-		}
-		seeds = newRanges
-	}
-	// fmt.Println("Seeds: ", seeds)
+
+            fmt.Println("New path:", newPath)
+
+            if newPath.Lo < newPath.Hi {
+                newDestLo := newPath.Lo - almEntry.sourceLo + almEntry.destinationLo
+                newDestHi := newPath.Hi - newPath.Lo + almEntry.destinationHi
+
+                fmt.Printf("Adding to newRanges: Lo=%d, Hi=%d\n", newDestLo, newDestHi)
+
+                newRanges = append(newRanges, PathRange{
+                    Lo: newDestLo,
+                    Hi: newDestHi,
+                })
+
+                if newPath.Lo > seedRange.Lo {
+                    seeds = append(seeds, PathRange{
+                        Lo: seedRange.Lo,
+                        Hi: newPath.Lo,
+                    })
+                }
+                if seedRange.Hi > newPath.Hi {
+                    seeds = append(seeds, PathRange{
+                        Lo: newPath.Hi,
+                        Hi: seedRange.Hi,
+                    })
+                }
+                break
+            }
+        }
+
+        if seedRange.Lo < seedRange.Hi {
+            newRanges = append(newRanges, seedRange)
+        }
+    }
+    seeds = newRanges
+}
+
+// Print seeds at the end of the function
+// fmt.Println("Final seeds:", seeds)
 
 	min := seeds[0].Lo
 	for _, v := range seeds {
 		if v.Lo < min {
+            fmt.Println(v.Lo)
+            fmt.Println(v.Hi)
+            fmt.Println()
 			min = v.Lo
 		}
 	}
