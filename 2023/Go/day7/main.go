@@ -61,13 +61,20 @@ func main() {
 		})
 	}
 
-    newArr := []Hand{}
+    newHands := []Hand{}
     for _, v := range hands {
-        newArr = handSort(newArr, v)
+        newHands = handSort(newHands, v)
     }
 
-    fmt.Println(newArr)
+    fmt.Println(hands)
+    fmt.Println(newHands)
 
+    total := 0
+    for i, hand := range newHands {
+        total = total + (i + 1) * hand.Points
+    }
+
+    fmt.Println(total)
 }
 
 func handParser(hand *string) int {
@@ -117,11 +124,12 @@ func handSort(hands []Hand, newHand Hand) []Hand {
         mid := (left + right) / 2
         if hands[mid].Strength < newHand.Strength {
             left = mid + 1
-        } else if hands[mid].Strength == newHand.Strength {
-
         } else {
             right = mid - 1
         }
+        // else if hands[mid].Strength == newHand.Strength {
+        //
+        // }
     }
 
     hands = append(hands[:left], append([]Hand{newHand}, hands[left:]...)...)
