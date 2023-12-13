@@ -8,9 +8,9 @@ import (
 )
 
 type Hand struct {
-	Cards  string
-	Points int
-    Strength int
+	Cards    string
+	Points   int
+	Strength int
 }
 
 var CardStrength map[string]int
@@ -55,26 +55,26 @@ func main() {
 		}
 
 		hands = append(hands, Hand{
-			Cards:  parsedLine[0],
-			Points: points,
-            Strength: handParser(&parsedLine[0]),
+			Cards:    parsedLine[0],
+			Points:   points,
+			Strength: handParser(&parsedLine[0]),
 		})
 	}
 
-    newHands := []Hand{}
-    for _, v := range hands {
-        newHands = handSort(newHands, v)
-    }
+	newHands := []Hand{}
+	for _, v := range hands {
+		newHands = handSort(newHands, v)
+	}
 
-    fmt.Println(hands)
-    fmt.Println(newHands)
+	// fmt.Println(hands)
+	// fmt.Println(newHands)
 
-    total := 0
-    for i, hand := range newHands {
-        total = total + (i + 1) * hand.Points
-    }
+	total := 0
+	for i, hand := range newHands {
+		total = total + (i+1)*hand.Points
+	}
 
-    fmt.Println(total)
+	fmt.Println(total)
 }
 
 func handParser(hand *string) int {
@@ -105,35 +105,40 @@ func handParser(hand *string) int {
 				return 3
 			}
 		}
-        return 2
+		return 2
 	}
 
 	if len(mappedHand) == 4 {
 		return 1
 	}
 
-
 	return 0
 }
 
 func handSort(hands []Hand, newHand Hand) []Hand {
-    left := 0
-    right := len(hands) - 1
+    idx := 0
 
-    for left <= right {
-        mid := (left + right) / 2
-        if hands[mid].Strength < newHand.Strength {
-            left = mid + 1
-        } else {
-            right = mid - 1
+    Outer:
+    for idx < len(hands)  {
+        if hands[idx].Strength == newHand.Strength {
+            Inner:
+            for j := 0; j < len(hands[idx].Cards); j++ {
+                if CardStrength[string(hands[idx].Cards[j])] > CardStrength[string(newHand.Cards[j])] {
+                    // fmt.Println("Break on cards check ", idx, j)
+                    break Outer
+                } else if CardStrength[string(hands[idx].Cards[j])] < CardStrength[string(newHand.Cards[j])] {
+                    break Inner
+                } 
+            }
+        } else if hands[idx].Strength > newHand.Strength {
+                    // fmt.Println("Break on strength check ", idx)
+            break Outer
         }
-        // else if hands[mid].Strength == newHand.Strength {
-        //
-        // }
+        idx++
     }
 
-    hands = append(hands[:left], append([]Hand{newHand}, hands[left:]...)...)
-    copy(hands[left+1:], hands[left:])
+	hands = append(hands[:idx], append([]Hand{newHand}, hands[idx:]...)...)
+    // fmt.Println(hands)
 
-    return hands
+	return hands
 }
