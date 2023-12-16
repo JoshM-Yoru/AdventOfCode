@@ -150,8 +150,8 @@ func handParserPartTwo(hand *string) int {
 			if v > highest && k != "J" {
 				mostFreq = k
                 highest = v
-                // fmt.Println("K V Highest: ", k, v, highest)
-                // fmt.Println(mostFreq)
+                fmt.Println("K V Highest: ", k, v, highest)
+                fmt.Println("")
 			}
 		}
         mappedHand[mostFreq] = mappedHand[mostFreq] + mappedHand["J"]
