@@ -43,7 +43,7 @@ func main() {
 	CardStrength["3"] = 3
 	CardStrength["2"] = 2
 
-	// hands := []Hand{}
+	hands := []Hand{}
 	partTwoHands := []Hand{}
 
 	for _, line := range contentsArr {
@@ -55,11 +55,11 @@ func main() {
 			fmt.Println("Not a number: ", parsedLine[1])
 		}
 
-		// hands = append(hands, Hand{
-		// 	Cards:    parsedLine[0],
-		// 	Points:   points,
-		// 	Strength: handParser(&parsedLine[0]),
-		// })
+		hands = append(hands, Hand{
+			Cards:    parsedLine[0],
+			Points:   points,
+			Strength: handParser(&parsedLine[0]),
+		})
 
 		partTwoHands = append(partTwoHands, Hand{
 			Cards:    parsedLine[0],
@@ -68,10 +68,10 @@ func main() {
 		})
 	}
 
-	// newHands := []Hand{}
-	// for _, v := range hands {
-	// 	newHands = handSort(newHands, v)
-	// }
+	newHands := []Hand{}
+	for _, v := range hands {
+		newHands = handSort(newHands, v)
+	}
 
 	newHandsPartTwo := []Hand{}
 	for _, v := range partTwoHands {
@@ -80,19 +80,19 @@ func main() {
 
 	// fmt.Println(hands)
 	// fmt.Println(newHands)
-	// fmt.Println(newHandsPartTwo)
+	fmt.Println(newHandsPartTwo)
 
-	// total := 0
-	// for i, hand := range newHands {
-	// 	total = total + (i+1)*hand.Points
-	// }
-
-	totalPartTwo := 0
-	for i, hand := range newHandsPartTwo {
-		totalPartTwo = totalPartTwo + (i+1)*hand.Points
+	total := 0
+	for i, hand := range newHands {
+		total = total + (i+1)*hand.Points
 	}
 
-	// fmt.Println("Part One: ", total)
+	totalPartTwo := 0
+	for i, handPartTwo := range newHandsPartTwo {
+		totalPartTwo = totalPartTwo + (i+1)*handPartTwo.Points
+	}
+
+	fmt.Println("Part One: ", total)
 	fmt.Println("Part Two: ", totalPartTwo)
 }
 
@@ -141,25 +141,29 @@ func handParserPartTwo(hand *string) int {
 	for _, card := range *hand {
 		mappedHand[string(card)]++
 	}
-    // fmt.Println("Before: ", mappedHand)
+	// fmt.Println("Before: ", mappedHand)
+	// checkForJoker := false
 
-	if mappedHand["J"] > 0 {
+	if mappedHand["J"] > 0 && len(mappedHand) > 1 {
+		// checkForJoker = true
 		var mostFreq string
 		highest := 0
 		for k, v := range mappedHand {
 			if v > highest && k != "J" {
 				mostFreq = k
-                highest = v
-                fmt.Println("K V Highest: ", k, v, highest)
-                fmt.Println("")
+				highest = v
+				// fmt.Println("K V Highest: ", k, v, highest)
+				// fmt.Println("")
 			}
 		}
-        mappedHand[mostFreq] = mappedHand[mostFreq] + mappedHand["J"]
-        delete(mappedHand, "J")
+		mappedHand[mostFreq] = mappedHand[mostFreq] + mappedHand["J"]
+		delete(mappedHand, "J")
 	}
 
-    // fmt.Println("After: ", mappedHand)
-    // fmt.Println("")
+	// if checkForJoker {
+		// fmt.Println("After: ", mappedHand)
+	// }
+	// fmt.Println("")
 
 	if len(mappedHand) == 1 {
 		return 6
